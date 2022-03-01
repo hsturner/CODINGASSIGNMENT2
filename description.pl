@@ -1,0 +1,130 @@
+#!/usr/bin/perl
+use strict;
+use warnings FATAL => 'all';
+#                 CSC 123 Perl-Scheme Assignment
+
+#                 Due one week from date assigned
+
+
+# --------------------  Part I. Perl Drills.  $%&\*@!  --------------------
+
+#1. Euclid's algorithm for computing the gcd of two numbers can be
+#   written in C as
+#   int gcd(int a, int b)
+#   { while (a!=0 && b!=0)
+#       { if (a>b) a=a%b; else b=b%a; }
+#     return a+b;  // one of a,b will be zero
+#   }
+#
+#   Write it in Perl. This exercise is just warmup for Perl syntax.
+#   Don't forget that the {}'s are required in if-else expressions.
+#   Most of the operator symbols such as % are the same as in C.
+
+
+#2. Write the Perl version of the "howmany" higher-order function
+#   for array/lists.  For example,
+#      howmany( sub{$_[0] > 5}, (3,6,2,8,1) )
+#   should return 2, because there are two numbers in the list that are
+#   greater than 5.  Be sure you understand that the sub is a PARAMETER:
+#      howmany( sub{$_[0]%2==0}, (3,6,2,8,9) )
+#   should return 3 because there are three even numbers in the list.
+#   Hint: use the built-in foreach loop.
+
+
+#3. To prepare for a style of oop in perl, write a function that creates
+#   a closure that represents a "toggle": it should toggle between 0 and 1
+#   each time it's called.  Here's how I'd do it in Scheme:
+
+#   (define (maketoggle)
+#       (let ((x 0)) (lambda () (begin (set! x (- 1 x)) x))))
+
+#   (define toggle1 (makegoggle))  # maketoggle takes no arguments
+#   (define toggle2 (makegoggle))
+#   (toggle1)  ;returns 1
+#   (toggle1)  ;returns 0
+#   (toggle2)  ;returns 1
+
+# Your function must not use any global variables: you must be able to
+# create different *instances* of toggle.   Note the "lambda" that occurs inside
+# the function definition.  Your Perl program must emulate this structure.
+#
+#  **After you've written the function and tested it,  change the word "my" in
+#  your program  to "local." Observe and explain what happens.
+
+
+# --------------- Part II. Objects as Closures in Perl -------------------
+
+#  The rest of the assignment can be completed with EITHER SCHEME OR PERL.
+#  Do the exercises from the book exert "Modularity, Objects, and State",
+#  numbers 3.1-3.4 (between pages 297-305), and exercise 3.7 on page 319.
+#  You can start with some of the code I've given you in the sample
+#  programs (accumulator, bank account...)
+#  Recommendation: do it in both languages.
+
+### RESTRICTION: YOU MUST IMPLEMENT OBJECTS USING CLOSURES. YOU MAY NOT
+### USE 'PACKAGES' in PERL.  THIS IS AN ABSOLUTE REQUIREMENT.
+
+# However, you may use loops and should use them because there's no
+# tail-recursion optimization in Perl 5 (there is in Perl 6 but it was
+# never widely adopted).
+
+; Scheme Code base for Part II
+    (define (makeaccount balance)
+(define (withdraw a)
+    (begin (set! balance (- balance a))))
+(define (deposit a)
+    (begin (set! balance (+ balance a))))
+(define (inquiry) balance)
+(define (chargefee) (set! balance (- balance 2))) ; "private" function
+
+    (lambda (method)
+(cond ((equal? method 'withdraw) withdraw)
+          ((equal? method 'deposit)  deposit)
+((equal? method 'inquiry)  (inquiry))
+          (#t "no such method"))))
+
+(define myaccount (makeaccount 100))
+(define youraccount (makeaccount 200))
+
+((myaccount 'withdraw) 30)
+((youraccount 'deposit) 50)
+(myaccount 'inquiry)
+    (youraccount 'inquiry)
+
+
+# Perl code base for Part II
+sub newaccount
+{
+   my $balance = $_[0];
+
+   my $inquiry = sub { $balance };
+   my $deposit = sub { $balance = $balance + $_[0]; };
+
+   my $chargefee = sub { $balance -= 3; }; # "private" method
+   my $withdraw = sub
+		  { $balance = $balance - $_[0]; &$chargefee(); };
+
+   # return interface function:
+   sub
+   {
+     my $method = $_[0]; # requested method
+     if ($method eq withdraw) { return $withdraw; }
+     if ($method eq deposit)  { return $deposit; }
+     if ($method eq inquiry)  { return &$inquiry(); }
+       else { die "error"; }
+   }
+}
+
+my $myaccount = newaccount(500);  # the & is actually optional here.
+my $youraccount = newaccount(800);
+
+my $balance = 50;
+$myaccount->(withdraw)->(30);  # ((myaccount 'withdraw) 30)
+
+&{&$youraccount(deposit)}(70);   # alternate syntax
+
+print "my balance is ", $myaccount->(inquiry), "\n";
+print "your balance is ", $youraccount->(inquiry), "\n";
+
+########################################################################
+
