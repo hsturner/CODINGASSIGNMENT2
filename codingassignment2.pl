@@ -2,6 +2,8 @@
 #use strict;
 #use warnings FATAL => 'all';
 
+
+#problem 1: GCD
 sub gcd
 {
     my ($x,$y) = @_;
@@ -16,4 +18,14 @@ sub gcd
 $x = 4;
 $y = 2;
 
-print gcd($x,$y);
+print "Problem 1: \ngcd output of $x and $y: ",gcd($x,$y),"\n";
+
+
+#problem 2: howmany
+
+sub howmany
+{
+
+}
+
+
