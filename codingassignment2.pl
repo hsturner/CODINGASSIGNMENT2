@@ -145,42 +145,40 @@ sub newaccount
 
     my $passcheck = sub {$secretpassword};
 
+    sub interface
+    {
+        my $imethod = $_[0];
+        if($imethod eq passcheck){return &$passcheck();}
+        if ($imethod eq withdraw) { return $withdraw; }
+        if ($imethod eq deposit)  { return $deposit; }
+        if ($imethod eq inquiry) { return &$inquiry();}
+        else{ die "error";}
+    }
+
 
     # return interface function:
     sub
     {
         my $suppliedpass = $_[0];
-        #my $method = $_[1];
+        my $method = $_[1];
 
         #my $passresult = sub {$passcompare->($suppliedpass)};
 
         if($suppliedpass eq $secretpassword)
         {
-            return sub
-            {
-                my $method = $_[0];
-                if($method eq passcheck){return &$passcheck();}
-                if ($method eq withdraw) { return $withdraw; }
-                if ($method eq deposit)  { return $deposit; }
-                if ($method eq inquiry) { return &$inquiry();}
-                else{ die "error";}
-            }
+            return interface($method);
         }
-        else{print "wrong password\n";}
-
-
-
-
+        else{ my $error = "Wrong password"; return $error}
     }
+
 }
 
 my $myaccount = newaccount(500,password1);  # the & is actually optional here.
 my $youraccount = newaccount(800,password2);
-print "checking balance: should be 500: ",$myaccount->(password1)->(inquiry), "\n";
-print "checking password, should be password1: ",$myaccount->(password1)->(passcheck),"\n";
-print "attempting to withdraw with correct password: \n";
-$myaccount->(password1)->(withdraw)->(30);
-print "my balance should be 467: ", $myaccount->(password1)->(inquiry), "\n";
-print "attempting to withdraw with incorrect password: \n";
-$myaccount->(password2)->(withdraw)->(30);
-print "my balance should be 467", $myaccount->(password1)->(inquiry), "\n";
+print "checking balance: should be 500: ",$myaccount->(password1,inquiry), "\n";
+print "checking wrong password, should print wrong password: ",$myaccount->(password2,inquiry),"\n";
+print "checking withdraw: \n";
+$myaccount->(password1,withdraw)->(30);
+print "balance should be 467: ",$myaccount->(password1,inquiry),"\n";
+$myaccount->(password1,withdraw)->(30);
+print "balance should be 434: ",$myaccount->(password1,inquiry),"\n";
