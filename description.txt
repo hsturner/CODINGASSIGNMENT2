@@ -38,8 +38,8 @@ use warnings FATAL => 'all';
 #   (define (maketoggle)
 #       (let ((x 0)) (lambda () (begin (set! x (- 1 x)) x))))
 
-#   (define toggle1 (makegoggle))  # maketoggle takes no arguments
-#   (define toggle2 (makegoggle))
+#   (define toggle1 (maketoggle))  # maketoggle takes no arguments
+#   (define toggle2 (maketoggle))
 #   (toggle1)  ;returns 1
 #   (toggle1)  ;returns 0
 #   (toggle2)  ;returns 1

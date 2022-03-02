@@ -134,7 +134,7 @@ print "call count should be 2: ",$monitored_ac->(hmc),"\n";
 print "\nProblem 3.3 modified make-account function: \n";
 sub newaccount
 {
-    my $balance = $_[0];
+    my ($balance,$secretpassword)= @_;
 
     my $inquiry = sub { $balance };
     my $deposit = sub { $balance = $balance + $_[0]; };
@@ -143,16 +143,44 @@ sub newaccount
     my $withdraw = sub
     { $balance = $balance - $_[0]; &$chargefee(); };
 
+    my $passcheck = sub {$secretpassword};
+
+
     # return interface function:
     sub
     {
-        my $method = $_[0]; # requested method
-        if ($method eq withdraw) { return $withdraw; }
-        if ($method eq deposit)  { return $deposit; }
-        if ($method eq inquiry)  { return &$inquiry(); }
-        else { die "error"; }
+        my $suppliedpass = $_[0];
+        #my $method = $_[1];
+
+        #my $passresult = sub {$passcompare->($suppliedpass)};
+
+        if($suppliedpass eq $secretpassword)
+        {
+            return sub
+            {
+                my $method = $_[0];
+                if($method eq passcheck){return &$passcheck();}
+                if ($method eq withdraw) { return $withdraw; }
+                if ($method eq deposit)  { return $deposit; }
+                if ($method eq inquiry) { return &$inquiry();}
+                else{ die "error";}
+            }
+        }
+        else{print "wrong password\n";}
+
+
+
+
     }
 }
 
-my $myaccount = newaccount(500);  # the & is actually optional here.
-my $youraccount = newaccount(800);
+my $myaccount = newaccount(500,password1);  # the & is actually optional here.
+my $youraccount = newaccount(800,password2);
+print "checking balance: should be 500: ",$myaccount->(password1)->(inquiry), "\n";
+print "checking password, should be password1: ",$myaccount->(password1)->(passcheck),"\n";
+print "attempting to withdraw with correct password: \n";
+$myaccount->(password1)->(withdraw)->(30);
+print "my balance should be 467: ", $myaccount->(password1)->(inquiry), "\n";
+print "attempting to withdraw with incorrect password: \n";
+$myaccount->(password2)->(withdraw)->(30);
+print "my balance should be 467", $myaccount->(password1)->(inquiry), "\n";
