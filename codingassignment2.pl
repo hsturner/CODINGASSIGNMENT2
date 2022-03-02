@@ -42,19 +42,30 @@ $fisone = sub
 
 @three = (1,0,2,1,4,1);
 
-print "Problem 2:\n";
+print "\nProblem 2:\n";
 print "output of howmany (should be 3): ",howmany($fisone,@three),"\n";
 
 print "output of howmany (should be 1): ",howmany(sub{$_[0] > 3},@three),"\n";
 
 #Problem 3: Toggle closure
-
+print"\nProblem 3: Toggle\n";
 sub maketoggle
 {
     my $x = 0;
     sub
     {
-        $_[0]
+        $x = 1-$x;
+        $x
     }
 
 }
+
+$toggle1 = maketoggle();
+
+$toggle2 = maketoggle();
+
+print "toggle1: ",$toggle1->(),"\n";
+print "toggle1: ",$toggle1->(),"\n";
+print "toggle2: ",$toggle2->(),"\n";
+print "toggle1: ",$toggle1->(),"\n";
+print "toggle2: ",$toggle2->(),"\n";
