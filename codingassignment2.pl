@@ -69,3 +69,24 @@ print "toggle1: ",$toggle1->(),"\n";
 print "toggle2: ",$toggle2->(),"\n";
 print "toggle1: ",$toggle1->(),"\n";
 print "toggle2: ",$toggle2->(),"\n";
+
+#Problem 3.1 accumulator :
+print "\nProblem 3.1 Accumulator: \n";
+
+sub make_accumulator
+{
+    my $x = 0;
+    sub
+    {
+        $x += $_[0];
+        $x
+    }
+}
+$ac1 = make_accumulator();
+$ac2 = make_accumulator();
+print "accumulator 1: ",$ac1->(10),"\n";
+print "accumulator 2: ",$ac2->(10),"\n";
+print "accumulator 1: ",$ac1->(5),"\n";
+print "accumulator 2: ",$ac2->(1),"\n";
+
+#problem 3.2 make-monitored
