@@ -129,3 +129,30 @@ print "call count should be 1: ",$monitored_ac->(hmc),"\n";
 print "call count should be 1: ",$monitored_ac->(hmc),"\n";
 print "result should be 5: ",$monitored_ac->(4),"\n";
 print "call count should be 2: ",$monitored_ac->(hmc),"\n";
+
+#Problem 3.3 modified make-account function:
+print "\nProblem 3.3 modified make-account function: \n";
+sub newaccount
+{
+    my $balance = $_[0];
+
+    my $inquiry = sub { $balance };
+    my $deposit = sub { $balance = $balance + $_[0]; };
+
+    my $chargefee = sub { $balance -= 3; }; # "private" method
+    my $withdraw = sub
+    { $balance = $balance - $_[0]; &$chargefee(); };
+
+    # return interface function:
+    sub
+    {
+        my $method = $_[0]; # requested method
+        if ($method eq withdraw) { return $withdraw; }
+        if ($method eq deposit)  { return $deposit; }
+        if ($method eq inquiry)  { return &$inquiry(); }
+        else { die "error"; }
+    }
+}
+
+my $myaccount = newaccount(500);  # the & is actually optional here.
+my $youraccount = newaccount(800);
