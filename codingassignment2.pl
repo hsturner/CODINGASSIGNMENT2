@@ -132,19 +132,16 @@ print "call count should be 2: ",$monitored_ac->(hmc),"\n";
 
 #Problem 3.3 modified make-account function:
 print "\nProblem 3.3 modified make-account function: \n";
+
 sub newaccount
 {
     my ($balance,$secretpassword)= @_;
-
     my $inquiry = sub { $balance };
     my $deposit = sub { $balance = $balance + $_[0]; };
-
     my $chargefee = sub { $balance -= 3; }; # "private" method
     my $withdraw = sub
     { $balance = $balance - $_[0]; &$chargefee(); };
-
     my $passcheck = sub {$secretpassword};
-
     sub interface
     {
         my $imethod = $_[0];
@@ -154,16 +151,11 @@ sub newaccount
         if ($imethod eq inquiry) { return &$inquiry();}
         else{ die "error";}
     }
-
-
     # return interface function:
     sub
     {
         my $suppliedpass = $_[0];
         my $method = $_[1];
-
-        #my $passresult = sub {$passcompare->($suppliedpass)};
-
         if($suppliedpass eq $secretpassword)
         {
             return interface($method);
@@ -171,7 +163,7 @@ sub newaccount
         else{ my $error = "Wrong password"; return $error}
     }
 
-}
+}#newaccount
 
 my $myaccount = newaccount(500,password1);  # the & is actually optional here.
 my $youraccount = newaccount(800,password2);
@@ -182,3 +174,66 @@ $myaccount->(password1,withdraw)->(30);
 print "balance should be 467: ",$myaccount->(password1,inquiry),"\n";
 $myaccount->(password1,withdraw)->(30);
 print "balance should be 434: ",$myaccount->(password1,inquiry),"\n";
+
+#problem 3.4 call the cops
+print "\nProblem 3.4 Call the cops: \n";
+
+sub newaccountcop
+{
+    my ($balance,$secretpassword)= @_;
+    my $fuckups = 0;
+    my $inquiry = sub { $balance };
+    my $deposit = sub { $balance = $balance + $_[0]; };
+    my $chargefee = sub { $balance -= 3; }; # "private" method
+    my $withdraw = sub
+    { $balance = $balance - $_[0]; &$chargefee(); };
+    my $passcheck = sub {$secretpassword};
+    my $callthecops = sub
+    {
+        my $message = "Calling the cops for entering the wrong password too many times!";
+        return $message;
+    };
+    my $fuckuphandler = sub
+    {$fuckups +=1;
+        if($fuckups >=7){&$callthecops}else{my $error = "Wrong password"; return $error;}};
+
+    sub interface
+    {
+        my $imethod = $_[0];
+        if ($imethod eq passcheck){return &$passcheck();}
+        if ($imethod eq withdraw) { return $withdraw; }
+        if ($imethod eq deposit)  { return $deposit; }
+        if ($imethod eq inquiry) { return &$inquiry();}
+        else{ die "error";}
+    }
+    # return interface function:
+    sub
+    {
+        my $suppliedpass = $_[0];
+        my $method = $_[1];
+        if($suppliedpass eq $secretpassword)
+        {
+            return interface($method);
+        }else{
+            return &$fuckuphandler;
+        }
+    }
+}#newacountcop
+
+my $copaccount = newaccountcop(500,easypass);
+sub seven {
+    my
+    my $x = 7;
+    for()
+}
+$copaccount->(notpass,inquiry);
+$copaccount->(notpass,inquiry);
+$copaccount->(notpass,inquiry);
+$copaccount->(notpass,inquiry);
+$copaccount->(notpass,inquiry);
+$copaccount->(notpass,inquiry);
+$copaccount->(notpass,inquiry);
+
+
+#problem 3.7 Joint accounts
+print "\n Problem 3.7 Join accounts: \n";
