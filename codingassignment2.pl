@@ -191,7 +191,7 @@ sub newaccountcop
     my $callthecops = sub
     {
         #print "should be calling the cops!\n";
-        my $message = "You've entered the wrong password too many times! I'm calling the cops!";
+        my $message = "You've entered the wrong password too many times! I'm calling the cops!\n";
         print $message;
     };
     my $fuckuphandler = sub
@@ -240,3 +240,96 @@ $copaccount->("notpass","inquiry");
 
 #problem 3.7 Joint accounts
 print "\nProblem 3.7 Join accounts: \n";
+sub makejoin
+{
+    my($acp,$curpass,$newpass) = @_;
+
+
+}
+
+sub jointaccount
+{
+    my ($balance, $secretpassword) = @_;
+    my @passlist;
+
+
+
+    #when implementing new pass, add an entry to the hashtable with the name "pass+#ofentriesinhashtable+1"
+    #so name will be automated and will increase for each entry
+    #therefore need a function to get the size of the hash array when adding a new entry to the array
+
+
+    my $fuckups = 0;
+    my $inquiry = sub {$balance};
+    my $deposit = sub {$balance = $balance + $_[0];};
+    my $chargefee = sub {$balance -= 3;}; # "private" method
+    my $withdraw = sub
+    {
+        $balance = $balance - $_[0];
+        &$chargefee();
+    };
+    my $addpass = sub
+    {
+        my $newpass = $_[0]; #new password
+        push(@passlist,$newpass);
+    };
+    &$addpass($secretpassword); #adding initial password to the list of passwords
+    #print "making sure the initial password is in the password list:",@passlist,"\n";
+
+    my $passcheck = sub
+    {
+        my $checkpass = $_[0];
+        foreach (@passlist){
+            if($_ eq $checkpass){return 1}else{return 0}
+        }
+    };
+    my $callthecops = sub
+    {
+        #print "should be calling the cops!\n";
+        my $message = "You've entered the wrong password too many times! I'm calling the cops!";
+        print $message;
+    };
+    my $fuckuphandler = sub
+    {
+        $fuckups += 1;
+        #print "current fuckups: ",$fuckups,"\n";
+        my $fuckuplimit = 7;
+        my $errlim = $fuckuplimit - $fuckups;
+        if ($fuckups eq $fuckuplimit) {&$callthecops}
+        else {
+            my $error = "You've entered the wrong password! Attempts left: $errlim\n";
+            print $error;
+        }
+    }; #private method
+    my $getpass = sub {join(",",@passlist)};
+
+    my $interface = sub
+    {
+        my $imethod = $_[0];
+        if ($imethod eq "listpass") {return &$getpass();}
+        if ($imethod eq "withdraw") {return $withdraw;}
+        if ($imethod eq "deposit") {return $deposit;}
+        if ($imethod eq "inquiry") {return &$inquiry();}
+        else{&$addpass($imethod)}
+    };
+    # return interface function:
+    sub
+    {
+        my $suppliedpass = $_[0];
+        my $method = $_[1];
+        if ($passcheck->($suppliedpass)) {
+            return $interface->($method);
+        }
+        else {
+            &$fuckuphandler;
+        }
+    }
+}#joint account
+
+my $joint1 = jointaccount(500,"firstpass");
+print "Password list: ",&$joint1("firstpass","listpass"),"\n";
+#&$joint1()
+my $newpass = "secondpass";
+print "adding new password $newpass...\n";
+&$joint1("firstpass",$newpass);
+print "Password list should contain $newpass: \nPassword List: ",&$joint1("firstpass","listpass"),"\n";
