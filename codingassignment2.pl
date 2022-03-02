@@ -90,3 +90,42 @@ print "accumulator 1: ",$ac1->(5),"\n";
 print "accumulator 2: ",$ac2->(1),"\n";
 
 #problem 3.2 make-monitored
+print "\nProblem 3.2 make-monitored: \n";
+$pplusone = sub
+{
+    my $x = $_[0];
+    my $result = $x + 1;
+    $result
+};
+sub make_monitored
+{
+    my $fp = $_[0];
+    my $callcount = 0;
+    my $hmc = sub
+    {
+        $callcount
+    };
+    my $reset = sub
+    {
+        $callcount = 0;
+    };
+    my $increment = sub {$callcount = $callcount +1;};
+
+    sub {
+        my $method = $_[0];
+        if($method eq hmc){return &$hmc();}
+        if($method eq reset){return &$reset();}
+        else{&$increment();$fp->($method)}
+    }
+}
+$monitored_ac = make_monitored($pplusone);
+print"call count should be zero: ",$monitored_ac->(hmc),"\n";
+print "monitored plusone func: ",$monitored_ac->(10),"\n";
+print "call count should be 1: ",$monitored_ac->(hmc),"\n";
+$monitored_ac->(reset);
+print "call count should be 0: ",$monitored_ac->(hmc),"\n";
+print "result should be 20: ",$monitored_ac->(19),"\n";
+print "call count should be 1: ",$monitored_ac->(hmc),"\n";
+print "call count should be 1: ",$monitored_ac->(hmc),"\n";
+print "result should be 5: ",$monitored_ac->(4),"\n";
+print "call count should be 2: ",$monitored_ac->(hmc),"\n";
