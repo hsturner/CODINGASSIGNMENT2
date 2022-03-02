@@ -1,6 +1,6 @@
 #!/usr/bin/perl
-#use strict;
-#use warnings FATAL => 'all';
+use strict;
+use warnings FATAL => 'all';
 
 
 #problem 1: GCD
@@ -15,8 +15,8 @@ sub gcd
 
 }
 
-$x = 4;
-$y = 2;
+my $x = 4;
+my $y = 2;
 
 print "Problem 1: \n output of gcd $x and $y: ",gcd($x,$y),"\n";
 
@@ -34,13 +34,13 @@ sub howmany
     $result
 }
 
-$fisone = sub
+my $fisone = sub
 {
     my $x = $_[0];
     if($x == 1){$x}else{0};
 };
 
-@three = (1,0,2,1,4,1);
+my @three = (1,0,2,1,4,1);
 
 print "\nProblem 2:\n";
 print "output of howmany (should be 3): ",howmany($fisone,@three),"\n";
@@ -60,9 +60,9 @@ sub maketoggle
 
 }
 
-$toggle1 = maketoggle();
+my $toggle1 = maketoggle();
 
-$toggle2 = maketoggle();
+my $toggle2 = maketoggle();
 
 print "toggle1: ",$toggle1->(),"\n";
 print "toggle1: ",$toggle1->(),"\n";
@@ -82,8 +82,8 @@ sub make_accumulator
         $x
     }
 }
-$ac1 = make_accumulator();
-$ac2 = make_accumulator();
+my $ac1 = make_accumulator();
+my $ac2 = make_accumulator();
 print "accumulator 1: ",$ac1->(10),"\n";
 print "accumulator 2: ",$ac2->(10),"\n";
 print "accumulator 1: ",$ac1->(5),"\n";
@@ -91,7 +91,7 @@ print "accumulator 2: ",$ac2->(1),"\n";
 
 #problem 3.2 make-monitored
 print "\nProblem 3.2 make-monitored: \n";
-$pplusone = sub
+my $pplusone = sub
 {
     my $x = $_[0];
     my $result = $x + 1;
@@ -113,22 +113,22 @@ sub make_monitored
 
     sub {
         my $method = $_[0];
-        if($method eq hmc){return &$hmc();}
-        if($method eq reset){return &$reset();}
+        if($method eq "hmc"){return &$hmc();}
+        if($method eq "reset"){return &$reset();}
         else{&$increment();$fp->($method)}
     }
 }
-$monitored_ac = make_monitored($pplusone);
-print"call count should be zero: ",$monitored_ac->(hmc),"\n";
+my $monitored_ac = make_monitored($pplusone);
+print"call count should be zero: ",$monitored_ac->("hmc"),"\n";
 print "monitored plusone func: ",$monitored_ac->(10),"\n";
-print "call count should be 1: ",$monitored_ac->(hmc),"\n";
-$monitored_ac->(reset);
-print "call count should be 0: ",$monitored_ac->(hmc),"\n";
+print "call count should be 1: ",$monitored_ac->("hmc"),"\n";
+$monitored_ac->("reset");
+print "call count should be 0: ",$monitored_ac->("hmc"),"\n";
 print "result should be 20: ",$monitored_ac->(19),"\n";
-print "call count should be 1: ",$monitored_ac->(hmc),"\n";
-print "call count should be 1: ",$monitored_ac->(hmc),"\n";
+print "call count should be 1: ",$monitored_ac->("hmc"),"\n";
+print "call count should be 1: ",$monitored_ac->("hmc"),"\n";
 print "result should be 5: ",$monitored_ac->(4),"\n";
-print "call count should be 2: ",$monitored_ac->(hmc),"\n";
+print "call count should be 2: ",$monitored_ac->("hmc"),"\n";
 
 #Problem 3.3 modified make-account function:
 print "\nProblem 3.3 modified make-account function: \n";
@@ -142,15 +142,15 @@ sub newaccount
     my $withdraw = sub
     { $balance = $balance - $_[0]; &$chargefee(); };
     my $passcheck = sub {$secretpassword};
-    sub interface
+    my $interface = sub
     {
         my $imethod = $_[0];
-        if($imethod eq passcheck){return &$passcheck();}
-        if ($imethod eq withdraw) { return $withdraw; }
-        if ($imethod eq deposit)  { return $deposit; }
-        if ($imethod eq inquiry) { return &$inquiry();}
+        if($imethod eq "passcheck"){return &$passcheck();}
+        if ($imethod eq "withdraw") { return $withdraw; }
+        if ($imethod eq "deposit")  { return $deposit; }
+        if ($imethod eq "inquiry") { return &$inquiry();}
         else{ die "error";}
-    }
+    };
     # return interface function:
     sub
     {
@@ -158,22 +158,22 @@ sub newaccount
         my $method = $_[1];
         if($suppliedpass eq $secretpassword)
         {
-            return interface($method);
+            return $interface->($method);
         }
         else{ my $error = "Wrong password"; return $error}
     }
 
 }#newaccount
 
-my $myaccount = newaccount(500,password1);  # the & is actually optional here.
-my $youraccount = newaccount(800,password2);
-print "checking balance: should be 500: ",$myaccount->(password1,inquiry), "\n";
-print "checking wrong password, should print wrong password: ",$myaccount->(password2,inquiry),"\n";
+my $myaccount = newaccount(500,"password1");  # the & is actually optional here.
+my $youraccount = newaccount(800,"password2");
+print "checking balance: should be 500: ",$myaccount->("password1","inquiry"), "\n";
+print "checking wrong password, should print wrong password: ",$myaccount->("password2","inquiry"),"\n";
 print "checking withdraw: \n";
-$myaccount->(password1,withdraw)->(30);
-print "balance should be 467: ",$myaccount->(password1,inquiry),"\n";
-$myaccount->(password1,withdraw)->(30);
-print "balance should be 434: ",$myaccount->(password1,inquiry),"\n";
+$myaccount->("password1","withdraw")->(30);
+print "balance should be 467: ",$myaccount->("password1","inquiry"),"\n";
+$myaccount->("password1","withdraw")->(30);
+print "balance should be 434: ",$myaccount->("password1","inquiry"),"\n";
 
 #problem 3.4 call the cops
 print "\nProblem 3.4 Call the cops: \n";
@@ -190,22 +190,29 @@ sub newaccountcop
     my $passcheck = sub {$secretpassword};
     my $callthecops = sub
     {
-        my $message = "Calling the cops for entering the wrong password too many times!";
-        return $message;
+        #print "should be calling the cops!\n";
+        my $message = "You've entered the wrong password too many times! I'm calling the cops!";
+        print $message;
     };
     my $fuckuphandler = sub
-    {$fuckups +=1;
-        if($fuckups >=7){&$callthecops}else{my $error = "Wrong password"; return $error;}};
+    {
+        $fuckups+=1;
+        #print "current fuckups: ",$fuckups,"\n";
+        my $fuckuplimit = 7;
+        my $errlim = $fuckuplimit - $fuckups;
+        if($fuckups eq $fuckuplimit){&$callthecops}
+        else{my $error = "You've entered the wrong password! Attempts left: $errlim\n"; print $error;}
+    }; #private method
 
-    sub interface
+    my $interface = sub
     {
         my $imethod = $_[0];
-        if ($imethod eq passcheck){return &$passcheck();}
-        if ($imethod eq withdraw) { return $withdraw; }
-        if ($imethod eq deposit)  { return $deposit; }
-        if ($imethod eq inquiry) { return &$inquiry();}
-        else{ die "error";}
-    }
+        if ($imethod eq "passcheck"){return &$passcheck();}
+        if ($imethod eq "withdraw") { return $withdraw; }
+        if ($imethod eq "deposit")  { return $deposit; }
+        if ($imethod eq "inquiry") { return &$inquiry();}
+            #else{ die "error";}
+    };
     # return interface function:
     sub
     {
@@ -213,27 +220,23 @@ sub newaccountcop
         my $method = $_[1];
         if($suppliedpass eq $secretpassword)
         {
-            return interface($method);
+            return $interface->($method);
         }else{
-            return &$fuckuphandler;
+            &$fuckuphandler;
         }
     }
 }#newacountcop
 
-my $copaccount = newaccountcop(500,easypass);
-sub seven {
-    my
-    my $x = 7;
-    for()
-}
-$copaccount->(notpass,inquiry);
-$copaccount->(notpass,inquiry);
-$copaccount->(notpass,inquiry);
-$copaccount->(notpass,inquiry);
-$copaccount->(notpass,inquiry);
-$copaccount->(notpass,inquiry);
-$copaccount->(notpass,inquiry);
+my $copaccount = newaccountcop(500,"easypass");
+print"Inquiring about cop account using incorrect password: \n";
+$copaccount->("notpass","inquiry");
+$copaccount->("notpass","inquiry");
+$copaccount->("notpass","inquiry");
+$copaccount->("notpass","inquiry");
+$copaccount->("notpass","inquiry");
+$copaccount->("notpass","inquiry");
+$copaccount->("notpass","inquiry");
 
 
 #problem 3.7 Joint accounts
-print "\n Problem 3.7 Join accounts: \n";
+print "\nProblem 3.7 Join accounts: \n";
