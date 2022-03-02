@@ -243,6 +243,7 @@ print "\nProblem 3.7 Join accounts: \n";
 sub makejoin
 {
     my($acp,$curpass,$newpass) = @_;
+    &$acp($curpass,$newpass);
 
 
 }
@@ -278,10 +279,13 @@ sub jointaccount
 
     my $passcheck = sub
     {
+        my $result = 0;
         my $checkpass = $_[0];
         foreach (@passlist){
-            if($_ eq $checkpass){return 1}else{return 0}
+            if($_ eq $checkpass){$result = 1;}else{$result = 0}
+
         }
+        $result;
     };
     my $callthecops = sub
     {
@@ -317,7 +321,7 @@ sub jointaccount
     {
         my $suppliedpass = $_[0];
         my $method = $_[1];
-        if ($passcheck->($suppliedpass)) {
+        if (&$passcheck($suppliedpass) eq 1) {
             return $interface->($method);
         }
         else {
@@ -333,3 +337,5 @@ my $newpass = "secondpass";
 print "adding new password $newpass...\n";
 &$joint1("firstpass",$newpass);
 print "Password list should contain $newpass: \nPassword List: ",&$joint1("firstpass","listpass"),"\n";
+print "Checking that access is possible using second password: $newpass .....\n";
+print "If output is 500, access is possible with new password .... Output: ",&$joint1($newpass,"inquiry"),"\n";
