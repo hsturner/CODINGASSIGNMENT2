@@ -15,7 +15,7 @@ sub gcd
 
 }
 sub gcdTest{
-    print "Problem 1 GCD: \n";
+    print "Problem 1 GCD: \n\n";
     my $x = 4;
     my $y = 2;
     print "GCD of $x and $y: ", gcd($x, $y), "\n";
@@ -40,7 +40,7 @@ my $fisone = sub
     if($x == 1){$x}else{0};
 };
 sub howmanyTest{
-    print"\nProblem 2 howmany: \n";
+    print"\nProblem 2 howmany: \n\n";
     my @three = (1, 0, 2, 1, 4, 1);
     print "output of howmany (should be 3): ", howmany($fisone, @three), "\n";
     print "output of howmany (should be 1): ", howmany(sub {$_[0] > 3}, @three), "\n";
@@ -60,7 +60,7 @@ sub maketoggle
 }
 
 sub makeToggleTest{
-    print"\nProblem 3: Toggle\n";
+    print"\nProblem 3: Toggle\n\n";
     my $toggle1 = maketoggle();
     my $toggle2 = maketoggle();
     print "toggle1: ", $toggle1->(), "\n";
@@ -83,13 +83,13 @@ sub make_accumulator
     }
 }
 sub make_accumulatorTest {
-    print "\nProblem 3.1 Accumulator: \n";
+    print "\nProblem 3.1 Accumulator: \n\n";
     my $ac1 = make_accumulator();
     my $ac2 = make_accumulator();
-    print "accumulator 1: ", $ac1->(10), "\n";
-    print "accumulator 2: ", $ac2->(10), "\n";
-    print "accumulator 1: ", $ac1->(5), "\n";
-    print "accumulator 2: ", $ac2->(1), "\n";
+    print "accumulator 1 (init 10): ", $ac1->(10), "\n";
+    print "accumulator 2 (init 10): ", $ac2->(10), "\n";
+    print "accumulator 1 (10+5): ", $ac1->(5), "\n";
+    print "accumulator 2 (10+1): ", $ac2->(1), "\n\n";
 }
 #problem 3.2 make-monitored
 
@@ -121,7 +121,7 @@ sub make_monitored
     }
 }
 sub make_monitoredTest {
-    print "\nProblem 3.2 make-monitored: \n";
+    print "\nProblem 3.2 make-monitored: \n\n";
     my $monitored_ac = make_monitored($pplusone);
     print "Call count should be zero: ", $monitored_ac->("hmc"), "\n";
     print "Monitored plusone(10) func (expected 11): ", $monitored_ac->(10), "\n";
@@ -170,17 +170,17 @@ sub newaccount
 
 }#newaccount
 sub passwordprotectedtest {
-    print "\nProblem 3.3 modified make-account function: \n";
+    print "\nProblem 3.3 modified make-account function: \n\n";
     my $myaccount = newaccount(500, "password1"); # the & is actually optional here.
     my $youraccount = newaccount(800, "password2");
     print "checking balance: should be 500: ", $myaccount->("password1", "inquiry"), "\n";
     print "checking wrong password, should print wrong password: ", $myaccount->("password2", "inquiry"), "\n";
     print "checking withdraw: \n";
     $myaccount->("password1", "withdraw")->(30);
-    print "balance should be 467: ", $myaccount->("password1", "inquiry"), "\n";
+    print " balance should be 467: ", $myaccount->("password1", "inquiry"), "\n";
     $myaccount->("password1", "withdraw")->(30);
-    print "balance should be 434: ", $myaccount->("password1", "inquiry"), "\n";
-    print "Accessing second account....\nSuccess if output is 800: ",&$youraccount("password2","inquiry");
+    print " balance should be 434: ", $myaccount->("password1", "inquiry"), "\n";
+    print "Accessing second account....\n Success if output is 800: ",&$youraccount("password2","inquiry"),"\n";
 }
 
 #problem 3.4 call the cops
@@ -235,7 +235,7 @@ sub newaccountcop
     }
 }#newacountcop
 sub coptest {
-    print "\nProblem 3.4 Call the cops: \n";
+    print "\nProblem 3.4 Call the cops: \n\n";
     my $copaccount = newaccountcop(500, "easypass");
     print "Inquiring about cop account using incorrect password: \n";
     $copaccount->("notpass", "inquiry");
@@ -294,7 +294,7 @@ sub jointaccount
             if($_ eq $checkpass){$result += 1;}else{$result += 0;}
 
         }
-        print "result of passcheck on $checkpass was: $result\n";
+        #print "result of passcheck on $checkpass was: $result\n";
         $result;
     };
     my $callthecops = sub
@@ -341,14 +341,14 @@ sub jointaccount
 }#joint account
 
 sub makejointest {
-    print "\nProblem 3.7 Join accounts: \n";
+    print "\nProblem 3.7 Join accounts: \n\n";
     my $firstpass = "firstpass";
     my $joint1 = jointaccount(500, $firstpass);
     print "Initial password list (should only contain one value): ", &$joint1($firstpass, "listpass"), "\n";
     my $newpass = "secondpass";
     print "adding new password $newpass...\n";
     &$joint1($firstpass, $newpass);
-    print "Password list should contain $newpass: \nPassword List: ";
+    print "Password list should contain $newpass: \n Password List: ";
     print &$joint1($firstpass, "listpass"), "\n";
     print "Checking that access is possible using second password: $newpass .....\n";
     print "If output is 500, access is possible with new password .... Output: ", &$joint1($newpass, "inquiry"), "\n";
